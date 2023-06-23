@@ -63,6 +63,7 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
       setState(() {
         _tasks.add(task);
         _taskController.clear();
+        _scheduleNotification(task); // Agendar notificação para a nova tarefa
       });
     }
   }
@@ -71,6 +72,48 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
     setState(() {
       _tasks.removeAt(index);
     });
+  }
+
+  void _scheduleNotification(String task) {
+    const int notificationId = 0;
+    const String notificationTitle = 'Checklist Diários';
+    final String notificationBody = 'Lembre-se de realizar a tarefa: "$task"';
+
+    final android = AndroidNotificationDetails(
+      'channel id',
+      'channel name',
+      'channel description',
+      importance: Importance.high,
+    );
+    final ios = IOSNotificationDetails();
+    final platform = NotificationDetails(android: android, iOS: ios);
+
+    final DateTime now = DateTime.now();
+    final DateTime scheduledTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      now.hour,
+      now.minute +
+          1, // Agendar a notificação para 1 minuto a partir do momento atual
+    );
+
+    _notifications.zonedSchedule(
+      notificationId,
+      notificationTitle,
+      notificationBody,
+      scheduledTime,
+      platform,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
+  @override
+  void dispose() {
+    _taskController.dispose();
+    super.dispose();
   }
 
   @override
