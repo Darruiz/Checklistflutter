@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(CalculadoraApp());
@@ -33,6 +34,26 @@ class _CalculadoraState extends State<Calculadora> {
   int _selectedIndex = 0;
   String _display = '';
   double _result = 0;
+  List<String> _historico = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadHistorico();
+  }
+
+  void _loadHistorico() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String>? historico = prefs.getStringList('historico');
+    setState(() {
+      _historico = historico ?? [];
+    });
+  }
+
+  void _saveHistorico() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('historico', _historico);
+  }
 
   void _addToDisplay(String value) {
     setState(() {
@@ -48,6 +69,9 @@ class _CalculadoraState extends State<Calculadora> {
         ContextModel cm = ContextModel();
         _result = exp.evaluate(EvaluationType.REAL, cm);
         _display = _result.toString();
+        String calculation = '$_display = $_result';
+        _historico.add(calculation);
+        _saveHistorico();
       } catch (e) {
         _display = 'Erro';
       }
@@ -64,6 +88,13 @@ class _CalculadoraState extends State<Calculadora> {
   void _onNavbarItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+    });
+  }
+
+  void _clearHistorico() {
+    setState(() {
+      _historico.clear();
+      _saveHistorico();
     });
   }
 
@@ -126,21 +157,23 @@ class _CalculadoraState extends State<Calculadora> {
           ),
         ],
       ),
-      Container(
-        color: Colors.blueGrey,
-        child: Center(
-          child: Text(
-            'Histórico',
-            style: TextStyle(fontSize: 24.0, color: Colors.white),
-          ),
-        ),
+      ListView.builder(
+        itemCount: _historico.length,
+        itemBuilder: (BuildContext context, int index) {
+          return ListTile(
+            title: Text(
+              _historico[index],
+              style: TextStyle(fontSize: 18.0),
+            ),
+          );
+        },
       ),
       Container(
-        color: Colors.grey,
+        color: Colors.orangeAccent,
         child: Center(
-          child: Text(
-            'Configurações',
-            style: TextStyle(fontSize: 24.0, color: Colors.white),
+          child: ElevatedButton(
+            onPressed: _clearHistorico,
+            child: Text('Excluir Histórico'),
           ),
         ),
       ),
