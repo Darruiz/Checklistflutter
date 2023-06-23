@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
-import 'package:math_expressions/math_expressions.dart';
 
 void main() {
   runApp(CalculadoraApp());
@@ -32,24 +31,26 @@ class Calculadora extends StatefulWidget {
 }
 
 class _CalculadoraState extends State<Calculadora> {
-  final TextEditingController _displayController = TextEditingController();
+  CalcController _calcController;
   List<String> historico = [];
 
-  void adicionarOperacao(String operacao) {
-    setState(() {
-      historico.insert(0, operacao);
-    });
+  @override
+  void initState() {
+    super.initState();
+    _calcController = CalcController();
+    _calcController.history.addListener(adicionarOperacao);
   }
 
-  void calcularExpressao() {
-    String expressao = _displayController.text;
-    Parser p = Parser();
-    Expression exp = p.parse(expressao);
-    ContextModel cm = ContextModel();
-    double resultado = exp.evaluate(EvaluationType.REAL, cm);
+  @override
+  void dispose() {
+    _calcController.history.removeListener(adicionarOperacao);
+    super.dispose();
+  }
 
-    String operacaoComResultado = "$expressao = $resultado";
-    adicionarOperacao(operacaoComResultado);
+  void adicionarOperacao() {
+    setState(() {
+      historico.insert(0, _calcController.currentValue);
+    });
   }
 
   @override
@@ -86,7 +87,7 @@ class _CalculadoraState extends State<Calculadora> {
             padding: EdgeInsets.all(16.0),
             alignment: Alignment.bottomRight,
             child: TextField(
-              controller: _displayController,
+              controller: _calcController.displayValueController,
               enabled: false,
               textAlign: TextAlign.right,
               style: TextStyle(fontSize: 48.0, color: Colors.white),
@@ -100,11 +101,11 @@ class _CalculadoraState extends State<Calculadora> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
-                onPressed: calcularExpressao,
-                child: Text('='),
+                onPressed: _calcController.clear,
+                child: Text('C'),
               ),
               SimpleCalculator(
-                controller: _displayController,
+                controller: _calcController,
                 theme: const CalculatorThemeData(
                   displayColor: Colors.white,
                   displayStyle: TextStyle(fontSize: 48.0, color: Colors.black),
