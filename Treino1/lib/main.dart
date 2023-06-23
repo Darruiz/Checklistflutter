@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_simple_calculator/flutter_simple_calculator.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 void main() {
   runApp(CalculadoraApp());
@@ -34,6 +35,23 @@ class _CalculadoraState extends State<Calculadora> {
   final TextEditingController _displayController = TextEditingController();
   List<String> historico = [];
 
+  void adicionarOperacao(String operacao) {
+    setState(() {
+      historico.insert(0, operacao);
+    });
+  }
+
+  void calcularExpressao() {
+    String expressao = _displayController.text;
+    Parser p = Parser();
+    Expression exp = p.parse(expressao);
+    ContextModel cm = ContextModel();
+    double resultado = exp.evaluate(EvaluationType.REAL, cm);
+
+    String operacaoComResultado = "$expressao = $resultado";
+    adicionarOperacao(operacaoComResultado);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,17 +63,22 @@ class _CalculadoraState extends State<Calculadora> {
       body: Column(
         children: [
           Expanded(
-            child: ListView.builder(
+            child: SingleChildScrollView(
               reverse: true,
-              itemCount: historico.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text(
-                    historico[index],
-                    style: TextStyle(fontSize: 20.0, color: Colors.white),
-                  ),
-                );
-              },
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: historico
+                      .map(
+                        (expression) => Text(
+                          expression,
+                          style: TextStyle(fontSize: 20.0, color: Colors.white),
+                        ),
+                      )
+                      .toList(),
+                ),
+              ),
             ),
           ),
           Container(
@@ -73,30 +96,28 @@ class _CalculadoraState extends State<Calculadora> {
               ),
             ),
           ),
-          Expanded(
-            flex: 2,
-            child: SimpleCalculator(
-              onExpressionChanged: (expression) {
-                // Atualizar o histórico de operações
-                setState(() {
-                  historico.insert(0, expression);
-                });
-              },
-              theme: const CalculatorThemeData(
-                displayColor: Colors.white,
-                displayStyle:
-                    const TextStyle(fontSize: 48.0, color: Colors.white),
-                expressionColor: Colors.white,
-                expressionStyle:
-                    const TextStyle(fontSize: 20.0, color: Colors.white),
-                operatorColor: Colors.purple,
-                operatorStyle:
-                    const TextStyle(fontSize: 24.0, color: Colors.white),
-                commandColor: Colors.orange,
-                commandStyle:
-                    const TextStyle(fontSize: 24.0, color: Colors.white),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: calcularExpressao,
+                child: Text('='),
               ),
-            ),
+              SimpleCalculator(
+                controller: _displayController,
+                theme: const CalculatorThemeData(
+                  displayColor: Colors.white,
+                  displayStyle: TextStyle(fontSize: 48.0, color: Colors.black),
+                  expressionColor: Colors.white,
+                  expressionStyle:
+                      TextStyle(fontSize: 20.0, color: Colors.white),
+                  operatorColor: Colors.purple,
+                  operatorStyle: TextStyle(fontSize: 24.0, color: Colors.white),
+                  commandColor: Colors.orange,
+                  commandStyle: TextStyle(fontSize: 24.0, color: Colors.white),
+                ),
+              ),
+            ],
           ),
         ],
       ),
