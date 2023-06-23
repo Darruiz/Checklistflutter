@@ -38,30 +38,34 @@ class Calculadora extends StatelessWidget {
       backgroundColor: Colors.black,
       body: Column(
         children: [
-          Container(
-            color: Colors.black,
-            padding: EdgeInsets.all(16.0),
-            alignment: Alignment.bottomRight,
-            child: TextField(
-              controller: _displayController,
-              enabled: false,
-              textAlign: TextAlign.right,
-              style: TextStyle(fontSize: 48.0, color: Colors.white),
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.zero,
+          Expanded(
+            child: Container(
+              color: Color.fromARGB(255, 0, 0, 0),
+              padding: EdgeInsets.all(16.0),
+              alignment: Alignment.bottomRight,
+              child: TextField(
+                controller: _displayController,
+                enabled: false,
+                textAlign: TextAlign.right,
+                style: TextStyle(
+                    fontSize: 48.0, color: const Color.fromARGB(255, 0, 0, 0)),
+                decoration: InputDecoration(
+                  border: InputBorder.none,
+                  contentPadding: EdgeInsets.zero,
+                ),
               ),
             ),
           ),
           Expanded(
+            flex: 4,
             child: SimpleCalculator(
               theme: const CalculatorThemeData(
-                displayColor: Colors.white,
-                displayStyle:
-                    const TextStyle(fontSize: 48.0, color: Colors.black),
+                displayColor: Color.fromARGB(255, 0, 0, 0),
+                displayStyle: const TextStyle(
+                    fontSize: 48.0, color: Color.fromARGB(255, 255, 255, 255)),
                 expressionColor: Colors.white,
-                expressionStyle:
-                    const TextStyle(fontSize: 20.0, color: Colors.white),
+                expressionStyle: const TextStyle(
+                    fontSize: 20.0, color: Color.fromARGB(255, 0, 0, 0)),
                 operatorColor: Colors.purple,
                 operatorStyle:
                     const TextStyle(fontSize: 24.0, color: Colors.white),
