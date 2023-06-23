@@ -45,6 +45,13 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
       ),
       body: Column(
         children: [
+          Text(
+            'Author: Darruiz',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
           Expanded(
             child: ListView.builder(
               itemCount: _tasks.length,
