@@ -11,8 +11,8 @@ class CalculadoraApp extends StatelessWidget {
     return MaterialApp(
       title: 'Calculadora',
       theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: Colors.black,
         primaryColor: Colors.purple,
+        scaffoldBackgroundColor: Colors.black,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             primary: Colors.purple,
@@ -26,6 +26,8 @@ class CalculadoraApp extends StatelessWidget {
 }
 
 class Calculadora extends StatelessWidget {
+  final TextEditingController _displayController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,17 +41,24 @@ class Calculadora extends StatelessWidget {
           Container(
             color: Colors.black,
             padding: EdgeInsets.all(16.0),
-            child: Text(
-              '0',
+            alignment: Alignment.bottomRight,
+            child: TextField(
+              controller: _displayController,
+              enabled: false,
+              textAlign: TextAlign.right,
               style: TextStyle(fontSize: 48.0, color: Colors.white),
+              decoration: InputDecoration(
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.zero,
+              ),
             ),
           ),
           Expanded(
             child: SimpleCalculator(
               theme: const CalculatorThemeData(
-                displayColor: Colors.black,
+                displayColor: Colors.white,
                 displayStyle:
-                    const TextStyle(fontSize: 48.0, color: Colors.white),
+                    const TextStyle(fontSize: 48.0, color: Colors.black),
                 expressionColor: Colors.white,
                 expressionStyle:
                     const TextStyle(fontSize: 20.0, color: Colors.white),
