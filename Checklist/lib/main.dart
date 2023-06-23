@@ -1,6 +1,4 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void main() {
   runApp(ChecklistApp());
@@ -10,7 +8,7 @@ class ChecklistApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Checklist Diários',
+      title: 'Checklist App',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -25,47 +23,12 @@ class ChecklistScreen extends StatefulWidget {
 }
 
 class _ChecklistScreenState extends State<ChecklistScreen> {
-  FlutterLocalNotificationsPlugin _notifications;
-  TextEditingController _taskController;
-  List<String> _tasks;
+  List<String> _tasks = [];
 
-  @override
-  void initState() {
-    super.initState();
-    _taskController = TextEditingController();
-    _tasks = [];
-    _initializeNotifications();
-  }
-
-  void _initializeNotifications() {
-    _notifications = FlutterLocalNotificationsPlugin();
-    final android = AndroidInitializationSettings('@mipmap/ic_launcher');
-    final ios = IOSInitializationSettings();
-    final initSettings = InitializationSettings(android: android, iOS: ios);
-    _notifications.initialize(initSettings);
-  }
-
-  Future<void> _showNotification(String title, String body) async {
-    final android = AndroidNotificationDetails(
-      'channel id',
-      'channel name',
-      'channel description',
-      importance: Importance.high,
-    );
-    final ios = IOSNotificationDetails();
-    final platform = NotificationDetails(android: android, iOS: ios);
-    await _notifications.show(0, title, body, platform);
-  }
-
-  void _addTask() {
-    final task = _taskController.text;
-    if (task.isNotEmpty) {
-      setState(() {
-        _tasks.add(task);
-        _taskController.clear();
-        _scheduleNotification(task); // Agendar notificação para a nova tarefa
-      });
-    }
+  void _addTask(String task) {
+    setState(() {
+      _tasks.add(task);
+    });
   }
 
   void _removeTask(int index) {
@@ -74,53 +37,11 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
     });
   }
 
-  void _scheduleNotification(String task) {
-    const int notificationId = 0;
-    const String notificationTitle = 'Checklist Diários';
-    final String notificationBody = 'Lembre-se de realizar a tarefa: "$task"';
-
-    final android = AndroidNotificationDetails(
-      'channel id',
-      'channel name',
-      'channel description',
-      importance: Importance.high,
-    );
-    final ios = IOSNotificationDetails();
-    final platform = NotificationDetails(android: android, iOS: ios);
-
-    final DateTime now = DateTime.now();
-    final DateTime scheduledTime = DateTime(
-      now.year,
-      now.month,
-      now.day,
-      now.hour,
-      now.minute +
-          1, // Agendar a notificação para 1 minuto a partir do momento atual
-    );
-
-    _notifications.zonedSchedule(
-      notificationId,
-      notificationTitle,
-      notificationBody,
-      scheduledTime,
-      platform,
-      androidAllowWhileIdle: true,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-    );
-  }
-
-  @override
-  void dispose() {
-    _taskController.dispose();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Checklist Diários'),
+        title: Text('Checklist'),
       ),
       body: Column(
         children: [
@@ -145,16 +66,20 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _taskController,
+                    onSubmitted: _addTask,
                     decoration: InputDecoration(
-                      hintText: 'Adicionar tarefa',
+                      hintText: 'Add a task',
                     ),
                   ),
                 ),
                 SizedBox(width: 16.0),
                 ElevatedButton(
-                  onPressed: _addTask,
-                  child: Text('Adicionar'),
+                  onPressed: () {
+                    final newTask =
+                        'New Task'; // Replace with text from TextField
+                    _addTask(newTask);
+                  },
+                  child: Text('Add'),
                 ),
               ],
             ),
