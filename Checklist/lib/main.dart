@@ -73,6 +73,8 @@ class _ChecklistScreenState extends State<ChecklistScreen> {
               children: [
                 Expanded(
                   child: TextField(
+                    maxLines: null, // Permite várias linhas
+                    textInputAction: TextInputAction.done,
                     onSubmitted: _addTask,
                     decoration: InputDecoration(
                       hintText: 'Add a task',
