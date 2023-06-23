@@ -13,7 +13,6 @@ class CalculadoraApp extends StatelessWidget {
       theme: ThemeData.dark().copyWith(
         scaffoldBackgroundColor: Colors.black,
         primaryColor: Colors.purple,
-        accentColor: Colors.white,
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
             primary: Colors.purple,
@@ -34,7 +33,37 @@ class Calculadora extends StatelessWidget {
         title: Text('Calculadora'),
         centerTitle: true,
       ),
-      body: Calculator(),
+      backgroundColor: Colors.black,
+      body: Column(
+        children: [
+          Container(
+            color: Colors.black,
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              '0',
+              style: TextStyle(fontSize: 48.0, color: Colors.white),
+            ),
+          ),
+          Expanded(
+            child: SimpleCalculator(
+              theme: const CalculatorThemeData(
+                displayColor: Colors.black,
+                displayStyle:
+                    const TextStyle(fontSize: 48.0, color: Colors.white),
+                expressionColor: Colors.white,
+                expressionStyle:
+                    const TextStyle(fontSize: 20.0, color: Colors.white),
+                operatorColor: Colors.purple,
+                operatorStyle:
+                    const TextStyle(fontSize: 24.0, color: Colors.white),
+                commandColor: Colors.orange,
+                commandStyle:
+                    const TextStyle(fontSize: 24.0, color: Colors.white),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
